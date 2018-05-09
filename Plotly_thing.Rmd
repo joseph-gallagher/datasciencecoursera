@@ -1,0 +1,53 @@
+---
+title: "Air Quality and Wind"
+author: "Joe Gallagher"
+date: "May 9, 2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
+## Effect of wind
+
+Do windier days tend to correlate with a higher than normal amount of ozone/solar radiation? 
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(dplyr)
+library(plotly)
+
+data <- airquality
+
+wind_qt <- quantile(data$Wind, c(0, 0.33, 0.67, 1))
+lab <- c("Low Wind", "Med Wind", "High Wind")
+
+data <- mutate(data, 
+               wind_level = cut(Wind, 
+                                breaks = wind_qt,
+                                labels = lab))
+
+f <- list(
+  family = "Courier New, monospace",
+  size = 18,
+  color = "#7f7f7f"
+)
+x_axis <- list(title = "Ozone", titlefont = f)
+y_axis <- list(title = "Solar Radiation", titlefont = f)
+
+p <- plot_ly(data, x = data$Ozone, 
+        y = data$Solar.R, 
+        xaxis = x_axis,
+        yaxis = y_axis,
+        color = data$wind_level) %>%
+  layout(title = "Wind Effect on Ozone and Solar Radiation", 
+         xaxis = x_axis, yaxis = y_axis)
+
+```
+```{r pressure, echo=FALSE, message = FALSE, warning = FALSE, fig.height = 4, fig.width = 5,fig.align="center"}
+
+p
+```
+
